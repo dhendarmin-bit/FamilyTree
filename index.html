@@ -1,15 +1,33 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#12151b" id="themeColorMeta">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="KeluargaKu">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312151b'/%3E%3Cg fill='none' stroke='%23ff7a1f' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 56V38'/%3E%3Cpath d='M32 38a13 13 0 0 0-13-13c-5 0-8 4-8 8 0 8 13 10 13 18'/%3E%3Cpath d='M32 38a13 13 0 0 1 13-13c5 0 8 4 8 8 0 8-13 10-13 18'/%3E%3Ccircle cx='32' cy='16' r='7'/%3E%3C/g%3E%3C/svg%3E">
   <meta name="description" content="Aplikasi Silsilah Keluarga Modern & Offline First dengan Ekspor Excel">
   <title>KeluargaKu - Modern Family Tree</title>
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
+
+  <!-- Terapkan tema sedini mungkin agar tidak berkedip saat halaman dimuat -->
+  <script>
+    (function () {
+      var theme = "dark";
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") theme = saved;
+      } catch (e) {}
+      document.documentElement.setAttribute("data-theme", theme);
+      var meta = document.getElementById("themeColorMeta");
+      if (meta) meta.setAttribute("content", theme === "light" ? "#f1ebdc" : "#12151b");
+    })();
+  </script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,44 +38,89 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
+    /* =====================================================
+       SISTEM TEMA — CSS Custom Properties
+       Dark = default (:root). Light = [data-theme="light"].
+       Token baru (--bg, --surface, --accent, ...) adalah sumber utama;
+       nama variabel lama (--bg-card, --primary, ...) dipetakan ke token
+       baru sehingga seluruh CSS/JS existing tetap berjalan tanpa diubah.
+       ===================================================== */
     :root {
+      color-scheme: dark;
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      
-      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      --bg-surface: rgba(255, 255, 255, 0.98);
-      --bg-card: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --primary-light: #e0e7ff;
-      
-      --excel-green: #107c41;
-      --excel-hover: #0e6b37;
-      
-      --border-color: rgba(226, 232, 240, 0.9);
-      --card-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
-      
-      /* Gender Colors */
-      --male-color: #2563eb;
-      --male-bg: #eff6ff;
-      --male-border: #3b82f6;
-      --male-text: #1d4ed8;
-      
-      --female-color: #db2777;
-      --female-bg: #fdf2f8;
-      --female-border: #ec4899;
-      --female-text: #be185d;
 
-      /* Lines per Relationship Type */
-      --line-parent: #2563eb;       
-      --line-spouse: #e11d48;       
-      --line-sibling: #d97706;      
-      --line-grandparent: #9333ea;  
-      --line-uncle-cousin: #0d9488; 
-      --line-extended: #64748b;     
-      
+      /* Token utama (Dark) */
+      --bg: #12151b;
+      --surface: #1c212b;
+      --accent: #ff7a1f;
+      --accent-2: #2dd4bf;
+      --accent-hover: #ff9147;
+      --accent-hi: #ffa04d;
+      --accent-text: #ff7a1f;      /* aksen sebagai warna TEKS (kontras AA) */
+      --accent-2-text: #2dd4bf;
+      --on-accent: #12151b;        /* teks di atas tombol/latar aksen (kontras 6.2:1) */
+
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+
+      --border: rgba(255, 255, 255, 0.10);
+      --border-strong: rgba(255, 255, 255, 0.18);
+      --hover: rgba(255, 255, 255, 0.06);
+      --active: rgba(255, 122, 31, 0.15);
+
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-solid: #dc2626;     /* latar tombol bahaya (teks putih 4.8:1) */
+      --info: #38bdf8;
+
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      --glow: rgba(255, 122, 31, 0.45);
+      --overlay: rgba(0, 0, 0, 0.65);
+      --toast-bg: #2a3140;
+      --toast-text: #f3f4f6;
+      --page-bg: linear-gradient(135deg, #0c0f14 0%, #12151b 100%);
+
+      --transition-fast: 150ms ease;
+      --transition-normal: 250ms ease;
+
+      /* Pemetaan ke nama variabel existing */
+      --bg-gradient: var(--page-bg);
+      --bg-surface: var(--bg);
+      --bg-card: var(--surface);
+      --text-main: var(--text-primary);
+      --text-muted: var(--text-secondary);
+
+      --primary: var(--accent);
+      --primary-hover: var(--accent-hover);
+      --primary-light: var(--active);
+      --primary-text: var(--accent-text);
+
+      --border-color: var(--border);
+      --card-shadow: var(--shadow);
+
+      --excel-green: #107c41;
+      --excel-hover: #169c53;
+
+      /* Warna gender (identitas visual, tetap semantik) */
+      --male-color: #60a5fa;
+      --male-bg: rgba(30, 58, 138, 0.35);
+      --male-border: #3b82f6;
+      --male-text: #93c5fd;
+
+      --female-color: #f472b6;
+      --female-bg: rgba(131, 24, 67, 0.35);
+      --female-border: #ec4899;
+      --female-text: #fbcfe8;
+
+      /* Garis relasi pada pohon keluarga */
+      --line-parent: #60a5fa;
+      --line-spouse: #fb7185;
+      --line-sibling: #fbbf24;
+      --line-grandparent: #c084fc;
+      --line-uncle-cousin: #2dd4bf;
+      --line-extended: #94a3b8;
+
       --radius: 16px;
       --radius-sm: 10px;
 
@@ -65,39 +128,59 @@
       --nav-h: 64px;
     }
 
-    [data-theme="dark"] {
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-      --bg-surface: rgba(15, 23, 42, 0.98);
-      --bg-card: #1e293b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      
-      --primary: #6366f1;
-      --primary-hover: #818cf8;
-      --primary-light: rgba(99, 102, 241, 0.2);
-      
-      --excel-green: #107c41;
-      --excel-hover: #169c53;
-      
-      --border-color: rgba(51, 65, 85, 0.9);
-      --card-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-      
-      --male-color: #60a5fa;
-      --male-bg: rgba(30, 58, 138, 0.35);
-      --male-border: #3b82f6;
-      --male-text: #93c5fd;
-      
-      --female-color: #f472b6;
-      --female-bg: rgba(131, 24, 67, 0.35);
-      --female-border: #ec4899;
-      --female-text: #fbcfe8;
+    [data-theme="light"] {
+      color-scheme: light;
 
-      --line-parent: #60a5fa;
-      --line-spouse: #fb7185;
-      --line-sibling: #fbbf24;
-      --line-grandparent: #c084fc;
-      --line-uncle-cousin: #2dd4bf;
-      --line-extended: #94a3b8;
+      --bg: #f1ebdc;
+      --surface: #ffffff;
+      --accent: #ff7a1f;
+      --accent-2: #0d9488;
+      --accent-hover: #e86a10;
+      --accent-hi: #ffa04d;
+      --accent-text: #b93c0a;      /* oranye gelap agar teks lolos AA di atas krem/putih */
+      --accent-2-text: #0f766e;
+      --on-accent: #12151b;
+
+      --text-primary: #1c212b;
+      --text-secondary: #4b5563;
+
+      --border: rgba(28, 33, 43, 0.12);
+      --border-strong: rgba(28, 33, 43, 0.20);
+      --hover: rgba(28, 33, 43, 0.05);
+      --active: rgba(255, 122, 31, 0.12);
+
+      --success: #15803d;
+      --warning: #b45309;
+      --danger: #dc2626;
+      --danger-solid: #dc2626;
+      --info: #0369a1;
+
+      --shadow: 0 4px 20px rgba(28, 33, 43, 0.10);
+      --glow: rgba(255, 122, 31, 0.45);
+      --overlay: rgba(28, 33, 43, 0.55);
+      --toast-bg: #1c212b;
+      --toast-text: #f3f4f6;
+      --page-bg: linear-gradient(135deg, #f1ebdc 0%, #e6dcc4 100%);
+
+      --excel-green: #107c41;
+      --excel-hover: #0e6b37;
+
+      --male-color: #2563eb;
+      --male-bg: #eff6ff;
+      --male-border: #3b82f6;
+      --male-text: #1d4ed8;
+
+      --female-color: #db2777;
+      --female-bg: #fdf2f8;
+      --female-border: #ec4899;
+      --female-text: #be185d;
+
+      --line-parent: #2563eb;
+      --line-spouse: #e11d48;
+      --line-sibling: #d97706;
+      --line-grandparent: #9333ea;
+      --line-uncle-cousin: #0d9488;
+      --line-extended: #64748b;
     }
 
     * {
@@ -134,6 +217,7 @@
       -webkit-backdrop-filter: blur(12px);
       position: relative;
       overflow: hidden;
+      transform: translateZ(0); /* FAB, toast & modal tetap berada di dalam bingkai aplikasi */
     }
 
     @media (min-width: 768px) {
@@ -168,13 +252,40 @@
     .header-brand .logo-svg {
       width: 24px;
       height: 24px;
-      color: var(--primary);
+      color: var(--primary-text);
     }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-btn {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color var(--transition-fast), color var(--transition-fast), transform 0.3s ease;
+    }
+
+    .header-btn svg { width: 22px; height: 22px; }
+    .header-btn:hover { background: var(--hover); color: var(--text-main); }
+    .header-btn:hover svg { transform: rotate(45deg); }
+    .header-btn svg { transition: transform 0.3s ease; }
+    .header-btn.active { color: var(--primary-text); background: var(--active); }
+    .header-btn:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
 
     .header-brand h1 {
       font-size: 1.1rem;
       font-weight: 800;
-      background: linear-gradient(45deg, var(--primary), #a855f7);
+      background: linear-gradient(45deg, var(--primary-text), var(--accent-2-text));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -183,10 +294,10 @@
       height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
       display: flex;
       justify-content: space-around;
-      align-items: flex-start;
+      align-items: stretch;
       background: var(--bg-card);
-      border-top: none; 
-      padding: 8px 4px 0 4px;
+      border-top: 1px solid var(--border-color);
+      padding: 0 8px;
       padding-bottom: env(safe-area-inset-bottom, 0px);
       position: absolute;
       bottom: 0;
@@ -208,15 +319,20 @@
       font-size: 0.65rem;
       font-weight: 600;
       cursor: pointer;
-      flex: 1;
-      height: 48px;
-      transition: all 0.2s ease;
+      flex: 1 1 0;
+      min-width: 0;
+      height: var(--nav-h);
+      padding: 0;
+      transition: color 0.2s ease;
     }
 
     .nav-item svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
       stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .nav-item span {
@@ -227,9 +343,12 @@
     }
 
     .nav-item.active {
-      color: var(--primary);
+      color: var(--primary-text);
       font-weight: 700;
     }
+
+    .nav-item:hover { color: var(--text-main); }
+    .nav-item.active:hover { color: var(--primary-text); }
 
     .main-content {
       flex: 1;
@@ -278,7 +397,7 @@
       align-items: center;
       justify-content: center;
       background: var(--primary-light);
-      color: var(--primary);
+      color: var(--primary-text);
       flex-shrink: 0;
     }
 
@@ -370,7 +489,7 @@
 
     .tree-node-card.focus-node {
       border: 2.5px solid var(--primary) !important;
-      box-shadow: 0 0 16px rgba(79, 70, 229, 0.4);
+      box-shadow: 0 0 16px var(--glow);
       transform: scale(1.05);
       z-index: 20;
     }
@@ -533,10 +652,10 @@
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #6366f1);
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary), var(--accent-hi));
+      color: var(--on-accent);
       border: none;
-      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+      box-shadow: 0 8px 20px var(--glow);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -547,7 +666,7 @@
 
     .fab-btn:hover {
       transform: scale(1.08);
-      box-shadow: 0 12px 24px rgba(79, 70, 229, 0.5);
+      box-shadow: 0 12px 24px var(--glow);
     }
 
     .fab-btn:active {
@@ -582,11 +701,11 @@
       transition: all 0.2s ease;
     }
 
-    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary { background: var(--primary); color: var(--on-accent); }
     .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
     .btn-excel { background: var(--excel-green); color: white; }
     .btn-excel:hover { background: var(--excel-hover); }
-    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger { background: var(--danger-solid); color: #ffffff; }
     .full-width { width: 100%; }
     .mb { margin-bottom: 10px; }
 
@@ -670,7 +789,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: var(--overlay);
       backdrop-filter: blur(4px);
       z-index: 200;
       align-items: center;
@@ -742,8 +861,9 @@
       bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 20px);
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: #0f172a;
-      color: #fff;
+      background: var(--toast-bg);
+      color: var(--toast-text);
+      border: 1px solid var(--border-strong);
       padding: 10px 20px;
       border-radius: 30px;
       font-size: 0.75rem;
@@ -768,6 +888,52 @@
       border: 1px solid var(--border-color);
       margin-top: 10px;
     }
+
+    /* =====================================================
+       TEMA — lapisan tambahan (fokus, transisi, reduced motion)
+       ===================================================== */
+    html { background: var(--bg); }
+
+    .form-control::placeholder { color: var(--text-secondary); opacity: 1; }
+    select option { background: var(--surface); color: var(--text-primary); }
+
+    .form-control:focus,
+    .form-control:focus-visible {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--active);
+    }
+
+    .btn:focus-visible,
+    .nav-item:focus-visible,
+    .header-btn:focus-visible,
+    .fab-btn:focus-visible,
+    .close-btn:focus-visible,
+    .focus-selector-bar select:focus-visible,
+    #themeToggle:focus-visible {
+      outline: 3px solid var(--accent-2);
+      outline-offset: 2px;
+    }
+
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    /* Transisi tema hanya pada elemen yang belum punya transition sendiri */
+    html, body, #app, .app-header, .bottom-nav, .card, .tree-viewport,
+    .form-control, .modal-content, .theme-select-box {
+      transition:
+        background-color var(--transition-normal),
+        color var(--transition-normal),
+        border-color var(--transition-normal),
+        box-shadow var(--transition-normal);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -782,6 +948,11 @@
         </svg>
         <h1>KeluargaKu</h1>
       </div>
+      <div class="header-actions">
+        <button type="button" class="header-btn" data-target="backup" id="btnSettings" title="Pengaturan" aria-label="Pengaturan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
     </header>
 
     <main id="mainContent" class="main-content">
@@ -789,7 +960,7 @@
         <div class="summary-cards">
           <div class="card summary-card">
             <div class="sum-icon-wrapper">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </div>
             <div class="sum-info">
               <span class="sum-val" id="sumTotal">0</span>
@@ -918,7 +1089,7 @@
       </section>
 
       <section id="sec-backup" class="page-section">
-        <h2 style="font-size: 1rem; font-weight: 800; margin-bottom: 12px;">Pengaturan & Backup</h2>
+        <h2 style="font-size: 1rem; font-weight: 800; margin-bottom: 12px;">Pengaturan</h2>
         
         <div class="card mb">
           <h3 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 6px;">Tampilan Aplikasi</h3>
@@ -926,9 +1097,9 @@
             Sesuaikan mode warna tema visual aplikasi.
           </p>
           <div class="theme-select-box">
-            <span style="font-size: 0.8rem; font-weight: 700;">Mode Tema Hari Ini</span>
-            <button id="themeToggle" class="btn btn-secondary" style="padding: 6px 12px;">
-              <span id="themeModeText">Mode Terang</span>
+            <span style="font-size: 0.8rem; font-weight: 700;">Mode Tema</span>
+            <button id="themeToggle" type="button" class="btn btn-secondary" style="padding: 6px 12px;" aria-pressed="false" aria-label="Aktifkan mode terang">
+              <span id="themeModeText">Mode Gelap 🌙</span>
             </button>
           </div>
         </div>
@@ -988,30 +1159,25 @@
       </div>
     </main>
 
-    <nav class="bottom-nav">
+    <nav class="bottom-nav" aria-label="Navigasi utama">
       <button class="nav-item active" data-target="dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         <span>Beranda</span>
       </button>
 
       <button class="nav-item" data-target="tree">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22v-7"></path><path d="M12 15a5 5 0 0 0-5-5c-2 0-3 1.5-3 3 0 3 5 4 5 7"></path><path d="M12 15a5 5 0 0 1 5-5c2 0 3 1.5 3 3 0 3-5 4-5 7"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="2.5"></circle><circle cx="5" cy="19" r="2.5"></circle><circle cx="19" cy="19" r="2.5"></circle><path d="M12 7.5V12"></path><path d="M12 12H5v4.5"></path><path d="M12 12h7v4.5"></path></svg>
         <span>Pohon</span>
       </button>
 
       <button class="nav-item" data-target="members">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         <span>Keluarga</span>
       </button>
 
       <button class="nav-item" data-target="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <span>Cari</span>
-      </button>
-
-      <button class="nav-item" data-target="backup">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        <span>Pengaturan</span>
       </button>
     </nav>
 
@@ -1169,11 +1335,24 @@
 
   <script>
     const DB_KEY = "keluargaku_members_data";
+    const THEME_KEY = "theme";
+
+    function getStoredTheme() {
+      try {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === "light" || saved === "dark") return saved;
+      } catch (e) {}
+      return "dark"; // default
+    }
+
+    function saveTheme(theme) {
+      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    }
 
     let state = {
       members: [],
       focusId: null,
-      theme: localStorage.getItem("theme") || "light",
+      theme: getStoredTheme(),
       scale: 1,
       panX: 0,
       panY: 0,
@@ -1221,30 +1400,82 @@
       render();
     });
 
+    /* Bersihkan data anggota (dari penyimpanan / file impor) agar aman dan konsisten */
+    function cleanText(v) {
+      return String(v == null ? "" : v).replace(/[<>]/g, "").trim();
+    }
+
+    function cleanList(v) {
+      if (!Array.isArray(v)) return [];
+      return v.map(x => cleanId(x)).filter(Boolean);
+    }
+
+    function cleanId(v) {
+      return String(v == null ? "" : v).replace(/[^\w\-.]/g, "");
+    }
+
+    function sanitizeMembers(list) {
+      if (!Array.isArray(list)) return [];
+      const seen = new Set();
+      const out = [];
+      list.forEach((m, idx) => {
+        if (!m || typeof m !== "object") return;
+        let id = cleanId(m.id) || `person_${Date.now()}_${idx}`;
+        while (seen.has(id)) id += "_" + idx;
+        seen.add(id);
+        out.push({
+          id,
+          name: cleanText(m.name) || "Tanpa Nama",
+          nickname: cleanText(m.nickname),
+          gender: m.gender === "female" ? "female" : "male",
+          isAlive: m.isAlive === false || m.isAlive === "false" ? false : true,
+          birthDate: cleanText(m.birthDate),
+          deathDate: cleanText(m.deathDate),
+          job: cleanText(m.job),
+          notes: cleanText(m.notes),
+          parents: cleanList(m.parents),
+          spouse: cleanList(m.spouse),
+          children: cleanList(m.children)
+        });
+      });
+      // buang referensi ke anggota yang tidak ada
+      out.forEach(m => {
+        m.parents = m.parents.filter(x => seen.has(x) && x !== m.id);
+        m.spouse = m.spouse.filter(x => seen.has(x) && x !== m.id);
+        m.children = m.children.filter(x => seen.has(x) && x !== m.id);
+      });
+      return out;
+    }
+
     function loadData() {
-      const local = localStorage.getItem(DB_KEY);
+      let local = null;
+      try { local = localStorage.getItem(DB_KEY); } catch (e) {}
       if (local) {
-        try { 
-          state.members = JSON.parse(local); 
-        } catch (e) { 
-          state.members = sampleData; 
+        try {
+          state.members = sanitizeMembers(JSON.parse(local));
+        } catch (e) {
+          state.members = [];
         }
       } else {
-        state.members = sampleData;
+        state.members = []; // pengguna baru mulai dari silsilah kosong
       }
 
       if (state.members.length > 0 && !state.focusId) {
-        state.focusId = state.members[4] ? state.members[4].id : state.members[0].id;
+        state.focusId = state.members[0].id;
       }
     }
 
     function saveData() {
-      localStorage.setItem(DB_KEY, JSON.stringify(state.members));
+      try {
+        localStorage.setItem(DB_KEY, JSON.stringify(state.members));
+      } catch (e) {
+        showToast("Gagal menyimpan: penyimpanan browser penuh atau diblokir");
+      }
       render();
     }
 
     function setupEvents() {
-      document.querySelectorAll(".nav-item").forEach(btn => {
+      document.querySelectorAll(".nav-item, .header-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
           navTo(e.currentTarget.getAttribute("data-target"));
         });
@@ -1252,7 +1483,7 @@
 
       document.getElementById("themeToggle").addEventListener("click", () => {
         state.theme = state.theme === "light" ? "dark" : "light";
-        localStorage.setItem("theme", state.theme);
+        saveTheme(state.theme);
         applyTheme();
       });
 
@@ -1266,6 +1497,17 @@
       });
 
       document.getElementById("memberForm").addEventListener("submit", handleSaveMember);
+
+      document.querySelectorAll(".modal").forEach(modal => {
+        modal.addEventListener("click", (ev) => {
+          if (ev.target === modal) closeModal(modal.id);
+        });
+      });
+      document.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape") {
+          document.querySelectorAll(".modal.active").forEach(m => closeModal(m.id));
+        }
+      });
       document.getElementById("searchInput").addEventListener("input", handleSearch);
 
       document.getElementById("btnZoomIn").addEventListener("click", () => adjustZoom(0.15));
@@ -1317,7 +1559,18 @@
     }
 
     function applyTheme() {
-      document.documentElement.setAttribute("data-theme", state.theme);
+      const isLight = state.theme === "light";
+      document.documentElement.setAttribute("data-theme", isLight ? "light" : "dark");
+
+      const meta = document.getElementById("themeColorMeta");
+      if (meta) meta.setAttribute("content", isLight ? "#f1ebdc" : "#12151b");
+
+      const toggle = document.getElementById("themeToggle");
+      if (toggle) {
+        toggle.setAttribute("aria-pressed", String(isLight));
+        toggle.setAttribute("aria-label", isLight ? "Aktifkan mode gelap" : "Aktifkan mode terang");
+      }
+
       const text = document.getElementById("themeModeText");
       if (text) {
         text.innerText = state.theme === "light" ? "Mode Terang ☀️" : "Mode Gelap 🌙";
@@ -1325,11 +1578,18 @@
     }
 
     function navTo(targetSection) {
-      document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".nav-item, .header-btn").forEach(b => {
+        b.classList.remove("active");
+        b.removeAttribute("aria-current");
+      });
       document.querySelectorAll(".page-section").forEach(s => s.classList.remove("active"));
 
-      const navBtn = document.querySelector(`.nav-item[data-target="${targetSection}"]`);
-      if (navBtn) navBtn.classList.add("active");
+      document.querySelectorAll(`[data-target="${targetSection}"]`).forEach(btn => {
+        btn.classList.add("active");
+        btn.setAttribute("aria-current", "page");
+      });
+      const mainEl = document.getElementById("mainContent");
+      if (mainEl) mainEl.scrollTop = 0;
 
       const sec = document.getElementById(`sec-${targetSection}`);
       if (sec) sec.classList.add("active");
@@ -1344,7 +1604,8 @@
       const t = document.getElementById("toast");
       t.innerText = msg;
       t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 2200);
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => t.classList.remove("show"), 2600);
     }
 
     function render() {
@@ -1865,18 +2126,23 @@
 
       const newMember = {
         id,
-        name: toTitleCase(document.getElementById("fullName").value),
-        nickname: toTitleCase(document.getElementById("nickname").value),
+        name: cleanText(toTitleCase(document.getElementById("fullName").value)),
+        nickname: cleanText(toTitleCase(document.getElementById("nickname").value)),
         gender: document.getElementById("gender").value,
         isAlive,
         birthDate: document.getElementById("birthDate").value || "",
         deathDate: isAlive ? "" : (document.getElementById("deathDate").value || ""),
         job: document.getElementById("job").value,
-        notes: toTitleCase(document.getElementById("notes").value),
+        notes: cleanText(toTitleCase(document.getElementById("notes").value)),
         parents: isEdit ? (state.members.find(m => m.id === id)?.parents || []) : [],
         spouse: isEdit ? (state.members.find(m => m.id === id)?.spouse || []) : [],
         children: isEdit ? (state.members.find(m => m.id === id)?.children || []) : []
       };
+
+      if (!newMember.name) {
+        showToast("Nama lengkap wajib diisi");
+        return;
+      }
 
       if (isEdit) {
         const idx = state.members.findIndex(m => m.id === id);
@@ -2116,7 +2382,7 @@
     /* EXCEL EXPORT & IMPORT FEATURES */
     function exportExcelData() {
       if (!window.XLSX) {
-        alert("Pustaka Excel sedang dimuat, silakan coba lagi...");
+        alert("Pustaka Excel belum termuat. Pastikan perangkat terhubung ke internet lalu muat ulang halaman.");
         return;
       }
 
@@ -2157,7 +2423,7 @@
       if (!file) return;
 
       if (!window.XLSX) {
-        alert("Pustaka Excel sedang dimuat, silakan coba lagi...");
+        alert("Pustaka Excel belum termuat. Pastikan perangkat terhubung ke internet lalu muat ulang halaman.");
         return;
       }
 
@@ -2191,8 +2457,13 @@
               children: parseList(row["ID Anak (pisahkan koma)"])
             }));
 
-            state.members = importedMembers;
-            state.focusId = importedMembers.length > 0 ? importedMembers[0].id : null;
+            const cleaned = sanitizeMembers(importedMembers);
+            if (state.members.length > 0 && !confirm(`Impor ${cleaned.length} anggota dari Excel? Data saat ini akan diganti.`)) {
+              e.target.value = "";
+              return;
+            }
+            state.members = cleaned;
+            state.focusId = cleaned.length > 0 ? cleaned[0].id : null;
             saveData();
             showToast("Impor data dari Excel berhasil");
           } else {
@@ -2221,29 +2492,34 @@
     }
 
     function importData(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
       const fileReader = new FileReader();
       fileReader.onload = (event) => {
         try {
           const imported = JSON.parse(event.target.result);
-          if (Array.isArray(imported)) {
-            state.members = imported;
-            state.focusId = imported.length > 0 ? imported[0].id : null;
-            saveData();
-            showToast("Restore data berhasil");
-          }
+          if (!Array.isArray(imported)) throw new Error("bukan array");
+          const cleaned = sanitizeMembers(imported);
+          if (state.members.length > 0 && !confirm(`Restore ${cleaned.length} anggota dari backup? Data saat ini akan diganti.`)) return;
+          state.members = cleaned;
+          state.focusId = cleaned.length > 0 ? cleaned[0].id : null;
+          saveData();
+          showToast("Restore data berhasil");
         } catch (err) {
           alert("Format file JSON tidak valid");
+        } finally {
+          e.target.value = "";
         }
       };
-      if (e.target.files.length > 0) {
-        fileReader.readAsText(e.target.files[0]);
-      }
+      fileReader.readAsText(file);
     }
 
     function loadSampleData() {
-      state.members = sampleData;
-      state.focusId = sampleData[4].id;
+      if (state.members.length > 0 && !confirm("Data saat ini akan diganti dengan data contoh. Lanjutkan?")) return;
+      state.members = JSON.parse(JSON.stringify(sampleData));
+      state.focusId = "p5";
       saveData();
+      navTo("dashboard");
       showToast("Data contoh dimuat");
     }
 
