@@ -13,7 +13,7 @@
   <link rel="manifest" href="/site.webmanifest">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312151b'/%3E%3Cg fill='none' stroke='%23ff7a1f' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 56V38'/%3E%3Cpath d='M32 38a13 13 0 0 0-13-13c-5 0-8 4-8 8 0 8 13 10 13 18'/%3E%3Cpath d='M32 38a13 13 0 0 1 13-13c5 0 8 4 8 8 0 8-13 10-13 18'/%3E%3Ccircle cx='32' cy='16' r='7'/%3E%3C/g%3E%3C/svg%3E">
   <meta name="description" content="Aplikasi Silsilah Keluarga Modern & Offline First dengan Ekspor Excel">
-  <title>KeluargaKu - Modern Family Tree</title>
+  <title>Family Tree</title>
 
   <!-- Terapkan tema sedini mungkin agar tidak berkedip saat halaman dimuat -->
   <script>
@@ -645,6 +645,46 @@
       border-radius: 2px;
     }
 
+    /* Pencarian & filter menu Keluarga */
+    .member-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: 0 -16px 10px;
+      padding: 8px 16px 6px;
+      background: var(--bg-surface);
+    }
+    .search-box { position: relative; margin-bottom: 8px; }
+    .search-box .form-control { padding-left: 38px; padding-right: 38px; text-transform: none; }
+    .search-box input[type="search"]::-webkit-search-cancel-button,
+    .search-box input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; display: none; }
+    .search-ico {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); pointer-events: none;
+    }
+    .search-clear {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 30px; height: 30px; border: none; border-radius: 50%;
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .search-clear:hover { background: var(--hover); color: var(--text-main); }
+    .filter-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .filter-row .form-control { padding: 9px 8px; font-size: 0.75rem; font-weight: 600; min-width: 0; }
+    .filter-row .form-control.is-active { border-color: var(--primary); color: var(--primary-text); }
+    .filter-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 22px; margin-top: 6px; font-size: 0.7rem; color: var(--text-muted);
+    }
+    .link-btn {
+      background: none; border: none; color: var(--primary-text);
+      font-weight: 700; font-size: 0.72rem; cursor: pointer; padding: 2px 0;
+    }
+    .no-result { text-align: center; padding: 28px 10px; color: var(--text-muted); font-size: 0.8rem; }
+    .no-result strong { display: block; color: var(--text-main); font-size: 0.9rem; margin-bottom: 4px; }
+    body[data-page="backup"] #emptyState,
+    body[data-page="tree"] #emptyState { display: none !important; }
+
     .fab-btn {
       position: fixed;
       bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 16px);
@@ -936,7 +976,7 @@
     }
   </style>
 </head>
-<body>
+<body data-page="dashboard">
   <div id="app">
     <header class="app-header">
       <div class="header-brand">
@@ -947,11 +987,6 @@
           <path d="M12 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
         </svg>
         <h1>KeluargaKu</h1>
-      </div>
-      <div class="header-actions">
-        <button type="button" class="header-btn" data-target="backup" id="btnSettings" title="Pengaturan" aria-label="Pengaturan">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </button>
       </div>
     </header>
 
@@ -1069,8 +1104,41 @@
 
       <section id="sec-members" class="page-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h2 style="font-size: 1rem; font-weight: 800;">Daftar Anggota Keluarga (A–Z)</h2>
+          <h2 style="font-size: 1rem; font-weight: 800;">Daftar Anggota Keluarga</h2>
         </div>
+
+        <div id="memberToolbar" class="member-toolbar hidden">
+          <div class="search-box">
+            <svg class="search-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="search" id="memberSearch" class="form-control" placeholder="Cari nama, panggilan, pekerjaan, catatan..." autocomplete="off" aria-label="Cari anggota keluarga">
+            <button type="button" id="memberSearchClear" class="search-clear hidden" aria-label="Hapus pencarian">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="filter-row">
+            <select id="filterGender" class="form-control" aria-label="Filter jenis kelamin">
+              <option value="all">Gender</option>
+              <option value="male">Laki-laki</option>
+              <option value="female">Perempuan</option>
+            </select>
+            <select id="filterStatus" class="form-control" aria-label="Filter status">
+              <option value="all">Status</option>
+              <option value="alive">Hidup</option>
+              <option value="deceased">Meninggal</option>
+            </select>
+            <select id="sortMember" class="form-control" aria-label="Urutkan">
+              <option value="az">Nama A–Z</option>
+              <option value="za">Nama Z–A</option>
+              <option value="oldest">Tertua</option>
+              <option value="youngest">Termuda</option>
+            </select>
+          </div>
+          <div class="filter-meta">
+            <span id="memberCount"></span>
+            <button type="button" id="btnResetFilter" class="link-btn hidden">Reset filter</button>
+          </div>
+        </div>
+
         <div id="memberList"></div>
 
         <button class="fab-btn" onclick="openAddModal()" title="Tambah Anggota">
@@ -1079,13 +1147,6 @@
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
-      </section>
-
-      <section id="sec-search" class="page-section">
-        <div class="form-group" style="margin-bottom: 12px;">
-          <input type="text" id="searchInput" class="form-control" placeholder="Cari berdasarkan nama, panggilan, pekerjaan...">
-        </div>
-        <div id="searchResults"></div>
       </section>
 
       <section id="sec-backup" class="page-section">
@@ -1175,9 +1236,9 @@
         <span>Keluarga</span>
       </button>
 
-      <button class="nav-item" data-target="search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <span>Cari</span>
+      <button class="nav-item" data-target="backup" id="btnSettings" aria-label="Pengaturan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Pengaturan</span>
       </button>
     </nav>
 
@@ -1393,6 +1454,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
       loadData();
       setupEvents();
       setupPanZoom();
@@ -1508,7 +1570,7 @@
           document.querySelectorAll(".modal.active").forEach(m => closeModal(m.id));
         }
       });
-      document.getElementById("searchInput").addEventListener("input", handleSearch);
+      setupMemberFilters();
 
       document.getElementById("btnZoomIn").addEventListener("click", () => adjustZoom(0.15));
       document.getElementById("btnZoomOut").addEventListener("click", () => adjustZoom(-0.15));
@@ -1593,6 +1655,7 @@
 
       const sec = document.getElementById(`sec-${targetSection}`);
       if (sec) sec.classList.add("active");
+      document.body.setAttribute("data-page", targetSection);
 
       if (targetSection === "tree") {
         renderTree();
@@ -2154,7 +2217,7 @@
       const relType = document.getElementById("relType").value;
       const relTargetId = document.getElementById("relTarget").value;
 
-      if (relTargetId && relType !== "none") {
+      if (relTargetId && relTargetId !== id && relType !== "none") {
         const target = state.members.find(m => m.id === relTargetId);
         if (target) {
           if (relType === "father" || relType === "mother") {
@@ -2272,6 +2335,8 @@
       document.getElementById("deathDate").value = m.deathDate || "";
       document.getElementById("job").value = m.job || "";
       document.getElementById("notes").value = m.notes || "";
+      document.getElementById("relType").value = "none";
+      document.getElementById("relTarget").value = "";
 
       toggleDeathDateField();
       document.getElementById("modalTitle").innerText = "Edit Anggota";
@@ -2306,72 +2371,112 @@
       });
     }
 
+    /* ===== Pencarian & filter daftar anggota ===== */
+    const memberFilter = { q: "", gender: "all", status: "all", sort: "az" };
+
+    function setupMemberFilters() {
+      const search = document.getElementById("memberSearch");
+      const clear = document.getElementById("memberSearchClear");
+
+      search.addEventListener("input", () => {
+        memberFilter.q = search.value;
+        renderMemberList();
+      });
+      clear.addEventListener("click", () => {
+        search.value = "";
+        memberFilter.q = "";
+        renderMemberList();
+        search.focus();
+      });
+      [["filterGender", "gender"], ["filterStatus", "status"], ["sortMember", "sort"]].forEach(([id, key]) => {
+        document.getElementById(id).addEventListener("change", (e) => {
+          memberFilter[key] = e.target.value;
+          renderMemberList();
+        });
+      });
+      document.getElementById("btnResetFilter").addEventListener("click", resetMemberFilters);
+    }
+
+    function resetMemberFilters() {
+      memberFilter.q = ""; memberFilter.gender = "all"; memberFilter.status = "all"; memberFilter.sort = "az";
+      document.getElementById("memberSearch").value = "";
+      document.getElementById("filterGender").value = "all";
+      document.getElementById("filterStatus").value = "all";
+      document.getElementById("sortMember").value = "az";
+      renderMemberList();
+    }
+
+    function sortMembers(list, mode) {
+      const byName = (a, b) => a.name.localeCompare(b.name, "id", { sensitivity: "base" });
+      const byBirth = (a, b, dir) => {
+        if (!a.birthDate && !b.birthDate) return byName(a, b);
+        if (!a.birthDate) return 1;   // tanpa tanggal lahir selalu di bawah
+        if (!b.birthDate) return -1;
+        return dir * a.birthDate.localeCompare(b.birthDate) || byName(a, b);
+      };
+      const arr = [...list];
+      if (mode === "za") arr.sort((a, b) => byName(b, a));
+      else if (mode === "oldest") arr.sort((a, b) => byBirth(a, b, 1));
+      else if (mode === "youngest") arr.sort((a, b) => byBirth(a, b, -1));
+      else arr.sort(byName);
+      return arr;
+    }
+
     function renderMemberList() {
       const list = document.getElementById("memberList");
+      const toolbar = document.getElementById("memberToolbar");
       list.innerHTML = "";
-      
-      const sortedMembers = [...state.members].sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' }));
+
+      const total = state.members.length;
+      toolbar.classList.toggle("hidden", total === 0);
+      if (total === 0) return;
+
+      const q = memberFilter.q.trim().toLowerCase();
+      const filtered = state.members.filter(m => {
+        if (memberFilter.gender !== "all" && m.gender !== memberFilter.gender) return false;
+        if (memberFilter.status === "alive" && !m.isAlive) return false;
+        if (memberFilter.status === "deceased" && m.isAlive) return false;
+        if (!q) return true;
+        return [m.name, m.nickname, m.job, m.notes].some(v => v && String(v).toLowerCase().includes(q));
+      });
+      const sortedMembers = sortMembers(filtered, memberFilter.sort);
+
+      const isFiltering = !!q || memberFilter.gender !== "all" || memberFilter.status !== "all" || memberFilter.sort !== "az";
+      document.getElementById("memberSearchClear").classList.toggle("hidden", !memberFilter.q);
+      document.getElementById("btnResetFilter").classList.toggle("hidden", !isFiltering);
+      document.getElementById("filterGender").classList.toggle("is-active", memberFilter.gender !== "all");
+      document.getElementById("filterStatus").classList.toggle("is-active", memberFilter.status !== "all");
+      document.getElementById("sortMember").classList.toggle("is-active", memberFilter.sort !== "az");
+      document.getElementById("memberCount").innerText =
+        sortedMembers.length === total ? `${total} anggota` : `${sortedMembers.length} dari ${total} anggota`;
+
+      if (sortedMembers.length === 0) {
+        list.innerHTML = '<div class="no-result"><strong>Tidak ada hasil</strong>Coba ubah kata kunci atau reset filter.</div>';
+        return;
+      }
 
       sortedMembers.forEach((m, index) => {
         const card = document.createElement("div");
         card.className = "member-item-card";
         const genderBadgeClass = m.gender === "male" ? "badge-male" : "badge-female";
         const genderText = m.gender === "male" ? "Laki-laki ♂" : "Perempuan ♀";
+        const statusText = m.isAlive ? "" : " · Alm.";
 
         card.innerHTML = `
           <div style="display: flex; align-items: center; flex: 1;">
             <div class="member-num">${index + 1}.</div>
             <div class="member-avatar ${m.gender}">${m.name.charAt(0).toUpperCase()}</div>
             <div>
-              <div style="font-weight:700; font-size:0.85rem; display: flex; align-items: center;">
+              <div style="font-weight:700; font-size:0.85rem; display: flex; align-items: center; flex-wrap: wrap;">
                 ${m.name}
                 <span class="gender-badge ${genderBadgeClass}">${genderText}</span>
               </div>
-              <small style="color:var(--text-muted); font-size:0.7rem;">${m.job || m.nickname || 'Tidak ada info pekerjaan'}</small>
+              <small style="color:var(--text-muted); font-size:0.7rem;">${(m.job || m.nickname || 'Tidak ada info pekerjaan') + statusText}</small>
             </div>
           </div>
         `;
         card.onclick = () => openDetailModal(m.id);
         list.appendChild(card);
-      });
-    }
-
-    function handleSearch(e) {
-      const query = e.target.value.toLowerCase();
-      const resContainer = document.getElementById("searchResults");
-      resContainer.innerHTML = "";
-
-      if (!query) return;
-
-      const matches = state.members
-        .filter(m =>
-          m.name.toLowerCase().includes(query) ||
-          (m.nickname && m.nickname.toLowerCase().includes(query)) ||
-          (m.job && m.job.toLowerCase().includes(query))
-        )
-        .sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' }));
-
-      matches.forEach((m, index) => {
-        const card = document.createElement("div");
-        card.className = "member-item-card";
-        const genderBadgeClass = m.gender === "male" ? "badge-male" : "badge-female";
-        const genderText = m.gender === "male" ? "Laki-laki ♂" : "Perempuan ♀";
-
-        card.innerHTML = `
-          <div style="display: flex; align-items: center; flex: 1;">
-            <div class="member-num">${index + 1}.</div>
-            <div class="member-avatar ${m.gender}">${m.name.charAt(0).toUpperCase()}</div>
-            <div>
-              <div style="font-weight:700; font-size:0.85rem; display: flex; align-items: center;">
-                ${m.name}
-                <span class="gender-badge ${genderBadgeClass}">${genderText}</span>
-              </div>
-              <small style="color:var(--text-muted); font-size:0.7rem;">${m.job || m.nickname || 'Tidak ada info'}</small>
-            </div>
-          </div>
-        `;
-        card.onclick = () => openDetailModal(m.id);
-        resContainer.appendChild(card);
       });
     }
 
